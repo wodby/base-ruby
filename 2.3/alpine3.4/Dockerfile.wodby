@@ -10,7 +10,8 @@ RUN mkdir -p /usr/local/etc \
 ENV RUBY_MAJOR 2.3
 ENV RUBY_VERSION 2.3.5
 ENV RUBY_DOWNLOAD_SHA256 7d3a7dabb190c2da06c963063342ca9a214bcd26f2158e904f0ec059b065ffda
-ENV RUBYGEMS_VERSION 2.6.13
+ENV RUBYGEMS_VERSION 2.7.3
+ENV BUNDLER_VERSION 1.16.0
 
 # some of ruby's build scripts are written in ruby
 #   we purge system ruby later to make sure our final image uses what we just built
@@ -30,20 +31,20 @@ RUN set -ex \
 		glib-dev \
 		libc-dev \
 		libffi-dev \
+		libressl \
+		libressl-dev \
 		libxml2-dev \
 		libxslt-dev \
 		linux-headers \
 		make \
 		ncurses-dev \
-		libressl \
-		libressl-dev \
 		procps \
 		readline-dev \
 		ruby \
 		tar \
+		xz \
 		yaml-dev \
 		zlib-dev \
-		xz \
 	\
 	&& wget -O ruby.tar.xz "https://cache.ruby-lang.org/pub/ruby/${RUBY_MAJOR%-rc}/ruby-$RUBY_VERSION.tar.xz" \
 	&& echo "$RUBY_DOWNLOAD_SHA256 *ruby.tar.xz" | sha256sum -c - \
@@ -75,29 +76,25 @@ RUN set -ex \
 	&& make install \
 	\
 	&& runDeps="$( \
-		scanelf --needed --nobanner --recursive /usr/local \
-			| awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
+		scanelf --needed --nobanner --format '%n#p' --recursive /usr/local \
+			| tr ',' '\n' \
 			| sort -u \
-			| xargs -r apk info --installed \
-			| sort -u \
+			| awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
 	)" \
 	&& apk add --virtual .ruby-rundeps $runDeps \
 		bzip2 \
 		ca-certificates \
 		libffi-dev \
 		libressl-dev \
-		yaml-dev \
 		procps \
+		yaml-dev \
 		zlib-dev \
 	&& apk del .ruby-builddeps \
 	&& cd / \
 	&& rm -r /usr/src/ruby \
 	\
-	&& gem update --system "$RUBYGEMS_VERSION"
-
-ENV BUNDLER_VERSION 1.15.4
-
-RUN gem install bundler --version "$BUNDLER_VERSION"
+	&& gem update --system "$RUBYGEMS_VERSION" \
+	&& gem install bundler --version "$BUNDLER_VERSION" --force
 
 # install things globally, for great justice
 # and don't create ".bundle" in all our apps
