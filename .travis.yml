@@ -1,47 +1,20 @@
-language: bash
-services: docker
+language: python
+
+sudo: required
+
+services:
+  - docker
 
 env:
-  - VERSION=2.5-rc VARIANT=stretch
-  - VERSION=2.5-rc VARIANT=stretch/slim
-  - VERSION=2.5-rc VARIANT=alpine3.6
-  - VERSION=2.4 VARIANT=stretch
-  - VERSION=2.4 VARIANT=stretch/slim
-  - VERSION=2.4 VARIANT=jessie
-  - VERSION=2.4 VARIANT=jessie/slim
-  - VERSION=2.4 VARIANT=alpine3.6
-  - VERSION=2.4 VARIANT=alpine3.4
-  - VERSION=2.3 VARIANT=jessie
-  - VERSION=2.3 VARIANT=jessie/slim
-  - VERSION=2.3 VARIANT=alpine3.4
-  - VERSION=2.2 VARIANT=jessie
-  - VERSION=2.2 VARIANT=jessie/slim
-  - VERSION=2.2 VARIANT=alpine3.4
-
-install:
-  - git clone --depth 1 https://github.com/docker-library/official-images.git ~/official-images
-
-before_script:
-  - env | sort
-  - cd "$VERSION/$VARIANT"
-  - slash='/'; image="ruby:${VERSION}-${VARIANT//$slash/-}"
+  matrix:
+    - VERSION=2.3
 
 script:
-  - |
-    (
-      set -Eeuo pipefail
-      set -x
-      travis_retry docker build -t "$image" .
-      ~/official-images/test/run.sh "$image"
-      if [ -d onbuild ]; then
-        onbuildFrom="$(awk 'toupper($1) == "FROM" { print $2; exit }' onbuild/Dockerfile)"
-        docker tag "$image" "$onbuildFrom"
-        docker build -t "$image-onbuild" onbuild
-        ~/official-images/test/run.sh "$image-onbuild"
-      fi
-    )
+  - cd ./"${VERSION}"/alpine3.4
+  - make
 
-after_script:
-  - docker images
-
-# vim:set et ts=2 sw=2:
+after_success: |
+  if [[ "${TRAVIS_PULL_REQUEST}" == "false" && ("${TRAVIS_BRANCH}" == "master"  || -n "${TRAVIS_TAG}") ]]; then
+    docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}"
+    make release
+  fi
