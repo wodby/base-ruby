@@ -3,12 +3,8 @@ language: python
 services:
   - docker
 
-env:
-  matrix:
-    - VERSION=2.3
-
 script:
-  - cd ./"${VERSION}"/alpine3.4
+  - cd ./2.3/alpine3.7.wodby
   - make
 
 after_success: |

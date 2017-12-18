@@ -1,16 +1,16 @@
 -include env_make
 
-TAG ?= 2.3.5
+TAG ?= 2.3.6
 
 REPO = wodby/ruby
-NAME = ruby-2.3.5
+NAME = ruby-2.3.6
 
 .PHONY: build test push shell run start stop logs clean release
 
 default: build
 
 build:
-	docker build -t $(REPO):$(TAG) -f Dockerfile.wodby ./
+	docker build -t $(REPO):$(TAG) -f Dockerfile ./
 
 test:
 	IMAGE=$(REPO):$(TAG) ./test.sh
