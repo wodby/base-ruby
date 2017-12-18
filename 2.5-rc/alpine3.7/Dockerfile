@@ -1,4 +1,4 @@
-FROM wodby/alpine:3.6-1.0.0
+FROM alpine:3.7
 
 # skip installing gem documentation
 RUN mkdir -p /usr/local/etc \
@@ -7,9 +7,9 @@ RUN mkdir -p /usr/local/etc \
 		echo 'update: --no-document'; \
 	} >> /usr/local/etc/gemrc
 
-ENV RUBY_MAJOR 2.3
-ENV RUBY_VERSION 2.3.5
-ENV RUBY_DOWNLOAD_SHA256 7d3a7dabb190c2da06c963063342ca9a214bcd26f2158e904f0ec059b065ffda
+ENV RUBY_MAJOR 2.5-rc
+ENV RUBY_VERSION 2.5.0-rc1
+ENV RUBY_DOWNLOAD_SHA256 a479a1bce69b2cf656821f10104dcb8b426922b56d3d6cbdf48318842fae752c
 ENV RUBYGEMS_VERSION 2.7.3
 ENV BUNDLER_VERSION 1.16.0
 
