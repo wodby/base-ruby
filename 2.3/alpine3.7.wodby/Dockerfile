@@ -1,4 +1,4 @@
-FROM wodby/alpine:3.7-1.1.0
+FROM wodby/alpine:3.7-1.1.1
 
 # skip installing gem documentation
 RUN mkdir -p /usr/local/etc \
