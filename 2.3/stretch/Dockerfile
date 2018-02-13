@@ -1,4 +1,4 @@
-FROM alpine:3.6
+FROM buildpack-deps:stretch
 
 # skip installing gem documentation
 RUN mkdir -p /usr/local/etc \
@@ -7,44 +7,27 @@ RUN mkdir -p /usr/local/etc \
 		echo 'update: --no-document'; \
 	} >> /usr/local/etc/gemrc
 
-ENV RUBY_MAJOR 2.4
-ENV RUBY_VERSION 2.4.3
-ENV RUBY_DOWNLOAD_SHA256 23677d40bf3b7621ba64593c978df40b1e026d8653c74a0599f0ead78ed92b51
+ENV RUBY_MAJOR 2.3
+ENV RUBY_VERSION 2.3.6
+ENV RUBY_DOWNLOAD_SHA256 e0d969ac22d4a403c1204868bb9c0d068aa35045bb3934cf50b17b7f66059f56
 ENV RUBYGEMS_VERSION 2.7.5
 ENV BUNDLER_VERSION 1.16.1
 
 # some of ruby's build scripts are written in ruby
 #   we purge system ruby later to make sure our final image uses what we just built
-# readline-dev vs libedit-dev: https://bugs.ruby-lang.org/issues/11869 and https://github.com/docker-library/ruby/issues/75
 RUN set -ex \
 	\
-	&& apk add --no-cache --virtual .ruby-builddeps \
-		autoconf \
+	&& buildDeps=' \
 		bison \
-		bzip2 \
-		bzip2-dev \
-		ca-certificates \
-		coreutils \
-		dpkg-dev dpkg \
-		gcc \
-		gdbm-dev \
-		glib-dev \
-		libc-dev \
-		libffi-dev \
-		libressl \
-		libressl-dev \
-		libxml2-dev \
-		libxslt-dev \
-		linux-headers \
-		make \
-		ncurses-dev \
-		procps \
-		readline-dev \
+		dpkg-dev \
+		libgdbm-dev \
+		# ruby 2.3 on stretch can only support libssl1.0-dev (libssl dev from buildpack-deps is 1.1.x)
+		libssl1.0-dev \
 		ruby \
-		tar \
-		xz \
-		yaml-dev \
-		zlib-dev \
+	' \
+	&& apt-get update \
+	&& apt-get install -y --no-install-recommends $buildDeps \
+	&& rm -rf /var/lib/apt/lists/* \
 	\
 	&& wget -O ruby.tar.xz "https://cache.ruby-lang.org/pub/ruby/${RUBY_MAJOR%-rc}/ruby-$RUBY_VERSION.tar.xz" \
 	&& echo "$RUBY_DOWNLOAD_SHA256 *ruby.tar.xz" | sha256sum -c - \
@@ -66,8 +49,6 @@ RUN set -ex \
 	\
 	&& autoconf \
 	&& gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
-# the configure script does not detect isnan/isinf as macros
-	&& export ac_cv_func_isnan=yes ac_cv_func_isinf=yes \
 	&& ./configure \
 		--build="$gnuArch" \
 		--disable-install-doc \
@@ -75,21 +56,7 @@ RUN set -ex \
 	&& make -j "$(nproc)" \
 	&& make install \
 	\
-	&& runDeps="$( \
-		scanelf --needed --nobanner --format '%n#p' --recursive /usr/local \
-			| tr ',' '\n' \
-			| sort -u \
-			| awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
-	)" \
-	&& apk add --virtual .ruby-rundeps $runDeps \
-		bzip2 \
-		ca-certificates \
-		libffi-dev \
-		libressl-dev \
-		procps \
-		yaml-dev \
-		zlib-dev \
-	&& apk del .ruby-builddeps \
+	&& apt-get purge -y --auto-remove $buildDeps \
 	&& cd / \
 	&& rm -r /usr/src/ruby \
 	\
