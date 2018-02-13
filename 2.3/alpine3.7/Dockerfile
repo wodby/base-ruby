@@ -1,4 +1,6 @@
-FROM wodby/alpine:3.7-1.1.1
+ARG BASE_IMAGE_TAG
+
+FROM wodby/alpine:${BASE_IMAGE_TAG}
 
 # skip installing gem documentation
 RUN mkdir -p /usr/local/etc \
@@ -10,8 +12,8 @@ RUN mkdir -p /usr/local/etc \
 ENV RUBY_MAJOR 2.3
 ENV RUBY_VERSION 2.3.6
 ENV RUBY_DOWNLOAD_SHA256 e0d969ac22d4a403c1204868bb9c0d068aa35045bb3934cf50b17b7f66059f56
-ENV RUBYGEMS_VERSION 2.7.3
-ENV BUNDLER_VERSION 1.16.0
+ENV RUBYGEMS_VERSION 2.7.5
+ENV BUNDLER_VERSION 1.16.1
 
 # some of ruby's build scripts are written in ruby
 #   we purge system ruby later to make sure our final image uses what we just built
@@ -94,7 +96,8 @@ RUN set -ex \
 	&& rm -r /usr/src/ruby \
 	\
 	&& gem update --system "$RUBYGEMS_VERSION" \
-	&& gem install bundler --version "$BUNDLER_VERSION" --force
+	&& gem install bundler --version "$BUNDLER_VERSION" --force \
+	&& rm -r /root/.gem/
 
 # install things globally, for great justice
 # and don't create ".bundle" in all our apps

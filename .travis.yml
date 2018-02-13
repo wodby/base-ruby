@@ -3,12 +3,21 @@ language: python
 services:
   - docker
 
-script:
-  - cd ./2.3/alpine3.7.wodby
-  - make
+env:
+  global:
+    - BASE_IMAGE_STABILITY_TAG=1.2.0
+  matrix:
+    - RUBY_VER=2.3.6 TAG=2.3.6 ALPINE_VER=3.7
 
-after_success: |
-  if [[ "${TRAVIS_PULL_REQUEST}" == "false" && ("${TRAVIS_BRANCH}" == "master"  || -n "${TRAVIS_TAG}") ]]; then
-    docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}"
-    make release
-  fi
+script:
+  - cd "${RUBY_VER:0:3}/alpine${ALPINE_VER}"
+  - travis_retry make
+
+after_success:
+  - bash "${TRAVIS_BUILD_DIR}/travis-release.sh"
+
+notifications:
+  on_failure: never
+  slack:
+    secure: |
+      WMMrQRVvnfGYotyJFPcWYyis0zaaehTqeRY7INYeoCz0asLr1HEHDem2DWLkkyEu2Bpk3EZJylkROFEcQuwIkbYusblKn3jgDF+ngsmiYnmGSQ9Q95DYKqHxUR/sjLK6PTU45QJGIpaLeP6+UCmpauPRonYfzDTmNdjA/0rO62zKz0ixyxE62b8jEEcmmg1GroQ2hXNz7Wqmfy5Ac6Y7mLVE+hzlxcdqqQpSVxwr2ETn5rUPqoNTDHm17LMjI2Loy7pzxyZaFu3FYmDmRxkeNmB83TpDlJACizFpeHwHn5Nqcl9FHwHEtmbV68vd1xZt8SmTSxeBWeREPQqTSnw9h9TBYuJm7S7aMNNuHgGQbk7F/Ej448BAHQexf69WUHC7/2/DFibdQvIm72D0LLT3Brr4eX38vJHo4PUGoAtEqOWg8q4jl+nxMaX3RwOjykYqSyuo/pEIIpfnHwf+09DhT28rBhib+uLGt13IkTe12n/CtDkC+UkM8/9xjzkVtbrs7mkjRH2B17V5C3hVUP7yFWF1Kj86Nr75070bl1oSTeES//J8heLhx6waoQD7ULMIZRorlCjqOliOluuvzcKU2ZOQ295RBQZYSmFT5RTBSVSqPU0k+Tf1Ru477Epc9aEqikOEECppxgQr4C+OvRrM7CnELpY7GocM8OCSGWMdCNc=

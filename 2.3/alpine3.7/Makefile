@@ -1,16 +1,25 @@
 -include env_make
 
-TAG ?= 2.3.6
+RUBY_VER ?= 2.3.6
+ALPINE_VER ?= 3.7
+
+TAG ?= $(RUBY_VER)
 
 REPO = wodby/ruby
-NAME = ruby-2.3.6
+NAME = ruby-$(RUBY_VER)
+
+ifeq ($(BASE_IMAGE_STABILITY_TAG),)
+    BASE_IMAGE_TAG := $(ALPINE_VER)
+else
+    BASE_IMAGE_TAG := $(ALPINE_VER)-$(BASE_IMAGE_STABILITY_TAG)
+endif
 
 .PHONY: build test push shell run start stop logs clean release
 
 default: build
 
 build:
-	docker build -t $(REPO):$(TAG) -f Dockerfile ./
+	docker build -t $(REPO):$(TAG) --build-arg BASE_IMAGE_TAG=$(BASE_IMAGE_TAG) ./
 
 test:
 	IMAGE=$(REPO):$(TAG) ./test.sh
