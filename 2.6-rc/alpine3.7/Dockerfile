@@ -1,4 +1,4 @@
-FROM alpine:3.4
+FROM alpine:3.7
 
 # skip installing gem documentation
 RUN mkdir -p /usr/local/etc \
@@ -7,11 +7,11 @@ RUN mkdir -p /usr/local/etc \
 		echo 'update: --no-document'; \
 	} >> /usr/local/etc/gemrc
 
-ENV RUBY_MAJOR 2.4
-ENV RUBY_VERSION 2.4.3
-ENV RUBY_DOWNLOAD_SHA256 23677d40bf3b7621ba64593c978df40b1e026d8653c74a0599f0ead78ed92b51
-ENV RUBYGEMS_VERSION 2.7.5
-ENV BUNDLER_VERSION 1.16.1
+ENV RUBY_MAJOR 2.6-rc
+ENV RUBY_VERSION 2.6.0-preview2
+ENV RUBY_DOWNLOAD_SHA256 00ddfb5e33dee24469dd0b203597f7ecee66522ebb496f620f5815372ea2d3ec
+ENV RUBYGEMS_VERSION 2.7.7
+ENV BUNDLER_VERSION 1.16.2
 
 # some of ruby's build scripts are written in ruby
 #   we purge system ruby later to make sure our final image uses what we just built
@@ -31,8 +31,8 @@ RUN set -ex \
 		glib-dev \
 		libc-dev \
 		libffi-dev \
-		openssl \
-		openssl-dev \
+		libressl \
+		libressl-dev \
 		libxml2-dev \
 		libxslt-dev \
 		linux-headers \
@@ -85,7 +85,7 @@ RUN set -ex \
 		bzip2 \
 		ca-certificates \
 		libffi-dev \
-		openssl-dev \
+		libressl-dev \
 		procps \
 		yaml-dev \
 		zlib-dev \
@@ -101,11 +101,12 @@ RUN set -ex \
 # and don't create ".bundle" in all our apps
 ENV GEM_HOME /usr/local/bundle
 ENV BUNDLE_PATH="$GEM_HOME" \
-	BUNDLE_BIN="$GEM_HOME/bin" \
 	BUNDLE_SILENCE_ROOT_WARNING=1 \
 	BUNDLE_APP_CONFIG="$GEM_HOME"
-ENV PATH $BUNDLE_BIN:$PATH
-RUN mkdir -p "$GEM_HOME" "$BUNDLE_BIN" \
-	&& chmod 777 "$GEM_HOME" "$BUNDLE_BIN"
+# path recommendation: https://github.com/bundler/bundler/pull/6469#issuecomment-383235438
+ENV PATH $GEM_HOME/bin:$BUNDLE_PATH/gems/bin:$PATH
+# adjust permissions of a few directories for running "gem install" as an arbitrary user
+RUN mkdir -p "$GEM_HOME" && chmod 777 "$GEM_HOME"
+# (BUNDLE_PATH = GEM_HOME, no need to mkdir/chown both)
 
 CMD [ "irb" ]
