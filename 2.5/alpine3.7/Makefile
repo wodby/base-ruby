@@ -1,8 +1,5 @@
 -include env_make
 
-RUBY_VER ?= 2.5.1
-ALPINE_VER ?= 3.7
-
 REPO = wodby/base-ruby
 NAME = base-ruby-$(RUBY_VER)
 
