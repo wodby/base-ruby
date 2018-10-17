@@ -5,9 +5,9 @@ services: docker
 env:
   global:
     - BASE_IMAGE_STABILITY_TAG=2.1.1
-    - RUBY25=2.5.1
-    - RUBY24=2.4.4
-    - RUBY23=2.3.7
+    - RUBY25=2.5.2
+    - RUBY24=2.4.5
+    - RUBY23=2.3.8
   matrix:
     - RUBY_VER="${RUBY25}" ALPINE_VER=3.7 TAGS="${RUBY_VER},2.5,2,latest"
     - RUBY_VER="${RUBY24}" ALPINE_VER=3.7 TAGS="${RUBY_VER},2.4"
