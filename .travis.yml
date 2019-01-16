@@ -9,9 +9,9 @@ env:
     - RUBY24=2.4.5
     - RUBY23=2.3.8
   matrix:
-    - RUBY_VER="${RUBY25}" ALPINE_VER=3.7 TAGS="${RUBY_VER},2.5,2,latest"
-    - RUBY_VER="${RUBY24}" ALPINE_VER=3.7 TAGS="${RUBY_VER},2.4"
-    - RUBY_VER="${RUBY23}" ALPINE_VER=3.7 TAGS="${RUBY_VER},2.3"
+    - RUBY_VER="${RUBY25}" ALPINE_VER=3.8 TAGS="${RUBY_VER},2.5,2,latest"
+    - RUBY_VER="${RUBY24}" ALPINE_VER=3.8 TAGS="${RUBY_VER},2.4"
+    - RUBY_VER="${RUBY23}" ALPINE_VER=3.8 TAGS="${RUBY_VER},2.3"
 
 script:
   - cd "${RUBY_VER:0:3}/alpine${ALPINE_VER}"
