@@ -18,7 +18,7 @@ This repository is a fork of https://github.com/docker-library/ruby with a few c
 
 Supported tags and respective `Dockerfile` links:
 
-* `2.6.0`, `2.6`, `2`, `latest` [_(Dockerfile 2.6)_]
+* `2.6.1`, `2.6`, `2`, `latest` [_(Dockerfile 2.6)_]
 * `2.5.3`, `2.5` [_(Dockerfile 2.5)_]
 * `2.4.5`, `2.4` [_(Dockerfile 2.4)_]
 * `2.3.8`, `2.3` [_(Dockerfile 2.3)_]
