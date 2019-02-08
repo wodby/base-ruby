@@ -23,7 +23,7 @@ Supported tags and respective `Dockerfile` links:
 * `2.4.5`, `2.4` [_(Dockerfile 2.4)_]
 * `2.3.8`, `2.3` [_(Dockerfile 2.3)_]
 
-[_(Dockerfile 2.6)_]: https://github.com/wodby/base-ruby/tree/master/2.6/alpine3.8/Dockerfile.wodby
-[_(Dockerfile 2.5)_]: https://github.com/wodby/base-ruby/tree/master/2.5/alpine3.8/Dockerfile.wodby
-[_(Dockerfile 2.4)_]: https://github.com/wodby/base-ruby/tree/master/2.4/alpine3.8/Dockerfile.wodby
+[_(Dockerfile 2.6)_]: https://github.com/wodby/base-ruby/tree/master/2.6/alpine3.9/Dockerfile.wodby
+[_(Dockerfile 2.5)_]: https://github.com/wodby/base-ruby/tree/master/2.5/alpine3.9/Dockerfile.wodby
+[_(Dockerfile 2.4)_]: https://github.com/wodby/base-ruby/tree/master/2.4/alpine3.9/Dockerfile.wodby
 [_(Dockerfile 2.3)_]: https://github.com/wodby/base-ruby/tree/master/2.3/alpine3.8/Dockerfile.wodby
