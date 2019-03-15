@@ -6,7 +6,7 @@ env:
   global:
     - BASE_IMAGE_STABILITY_TAG=2.2.1
     - RUBY26=2.6.2
-    - RUBY25=2.5.4
+    - RUBY25=2.5.5
     - RUBY24=2.4.5
     - RUBY23=2.3.8
   matrix:
